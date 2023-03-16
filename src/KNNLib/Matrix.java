@@ -9,6 +9,18 @@ public class Matrix {
 
     }
 
+    public ArrayList<ArrayList<Integer>> getMatrix() {
+        return matrix;
+    }
+
+    public void setMatrix(ArrayList<ArrayList<Integer>> matrix) {
+        this.matrix = matrix;
+    }
+
+    public int getCategoryAttribute(){
+        return matrix.get(0).size()-1;
+    }
+
     // splits the matrix into a training and testing set
     // i.e. return [training, testing]
     public static ArrayList<Matrix> splitMatrix(double percent) {
