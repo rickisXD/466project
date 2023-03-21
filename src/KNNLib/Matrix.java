@@ -10,12 +10,17 @@ import java.util.Collections;
 public class Matrix {
     // reads in file and makes 2d matrix out of it
     ArrayList<ArrayList<Integer>> matrix;
+
+    public Matrix(ArrayList<ArrayList<Integer>> matrix) {
+        this.matrix = matrix;
+    }
+
+    public Matrix() {
+        this.matrix = new ArrayList<>();
+    }
+
     public Matrix(String filePath) {
         this.matrix = new ArrayList<>();
-
-        if (filePath.equals("")) { // return empty Matrix
-            return;
-        }
 
         String line = "";
         String delimiter = ","; // specify the delimiter used in your CSV file
@@ -64,8 +69,8 @@ public class Matrix {
         ArrayList<ArrayList<Integer>> testingMatrix = new ArrayList<>(matrixCopy.subList(numTrainingRows, matrixCopy.size()));
 
         // Create new Matrix objects for the training and testing sets
-        Matrix training = new Matrix("");
-        Matrix testing = new Matrix("");
+        Matrix training = new Matrix();
+        Matrix testing = new Matrix();
 
         training.setMatrix(trainingMatrix);
         testing.setMatrix(testingMatrix);
