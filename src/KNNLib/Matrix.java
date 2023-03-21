@@ -9,6 +9,10 @@ public class Matrix {
 
     }
 
+    public Matrix(ArrayList<ArrayList<Integer>> matrix) {
+        this.matrix = matrix;
+    }
+
     public ArrayList<ArrayList<Integer>> getMatrix() {
         return matrix;
     }
