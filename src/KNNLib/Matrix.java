@@ -1,16 +1,35 @@
 package KNNLib;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class Matrix {
     // reads in file and makes 2d matrix out of it
     ArrayList<ArrayList<Integer>> matrix;
     public Matrix(String filePath) {
+        this.matrix = new ArrayList<>();
 
-    }
+        if (filePath.equals("")) { // return empty Matrix
+            return;
+        }
 
-    public Matrix(ArrayList<ArrayList<Integer>> matrix) {
-        this.matrix = matrix;
+        String line = "";
+        String delimiter = ","; // specify the delimiter used in your CSV file
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String header = br.readLine(); // clear header line
+            while ((line = br.readLine()) != null) {
+                ArrayList<String> row = new ArrayList<>(Arrays.asList(line.split(delimiter)));
+                matrix.add(parseRow(row));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public ArrayList<ArrayList<Integer>> getMatrix() {
@@ -27,7 +46,92 @@ public class Matrix {
 
     // splits the matrix into a training and testing set
     // i.e. return [training, testing]
-    public static ArrayList<Matrix> splitMatrix(double percent) {
-        return null;
+    public ArrayList<Matrix> splitMatrix(double percent) {
+        ArrayList<Matrix> splitMatrices = new ArrayList<>();
+
+        ArrayList<ArrayList<Integer>> matrixCopy = new ArrayList<>();
+        for (ArrayList<Integer> row : this.matrix) {
+            ArrayList<Integer> rowCopy = new ArrayList<>(row);
+            matrixCopy.add(rowCopy);
+        }
+        Collections.shuffle(matrixCopy);
+
+        // Calculate split
+        int numTrainingRows = (int) Math.round(matrixCopy.size() * percent);
+
+        // Split into training and testing sets
+        ArrayList<ArrayList<Integer>> trainingMatrix = new ArrayList<>(matrixCopy.subList(0, numTrainingRows));
+        ArrayList<ArrayList<Integer>> testingMatrix = new ArrayList<>(matrixCopy.subList(numTrainingRows, matrixCopy.size()));
+
+        // Create new Matrix objects for the training and testing sets
+        Matrix training = new Matrix("");
+        Matrix testing = new Matrix("");
+
+        training.setMatrix(trainingMatrix);
+        testing.setMatrix(testingMatrix);
+
+        splitMatrices.add(training);
+        splitMatrices.add(testing);
+
+        return splitMatrices;
+    }
+
+
+
+    // parses a row from kaggle_bot_accounts.csv
+    // still needs categoric one-hot encoding for REGISTRATION_IPV4 and REGISTRATION_LOCATION
+    private ArrayList<Integer> parseRow(ArrayList<String> row) {
+        ArrayList<Integer> parsedRow = new ArrayList<>();
+
+        parsedRow.add(parseGender(row.get(2))); // GENDER (1 = Male, 0 = Female)
+        parsedRow.add(parseBoolean(row.get(4))); // IS_GLOGIN
+        parsedRow.add(parseNumeric(row.get(5))); // FOLLOWER_COUNT
+        parsedRow.add(parseNumeric(row.get(6))); // FOLLOWING_COUNT
+        parsedRow.add(parseNumeric(row.get(7))); // DATASET_COUNT
+        parsedRow.add(parseNumeric(row.get(8))); // CODE_COUNT
+        parsedRow.add(parseNumeric(row.get(9))); // DISCUSSION_COUNT
+        parsedRow.add(parseNumeric(row.get(10))); // AVG_NB_READ_TIME_MIN
+        // REGISTRATION_IPV4 (not implemented)
+        // REGISTRATION_LOCATION (not implemented)
+
+        for (int i=13; i<=15; i++) {
+            if (row.size() <= i) { // Missing data, csv row is cut short
+                parsedRow.add(null);
+            } else {
+                parsedRow.add(parseNumeric(row.get(i))); // TOTAL_VOTES_GAVE_NB, TOTAL_VOTES_GAVE_DS, TOTAL_VOTES_GAVE_DC
+            }
+        }
+
+        if (row.size() > 16) {
+            parsedRow.add(parseBoolean(row.get(16))); // ISBOT
+        } else {
+            parsedRow.add(null); // Missing ISBOT data
+        }
+
+        return parsedRow;
+    }
+
+    private Integer parseNumeric(String str) {
+        if (str.isEmpty()) { // empty data
+            return null;
+        } else {
+            return (int) Double.parseDouble(str);
+        }
+    }
+
+    private Integer parseBoolean(String str) {
+        if (str.isEmpty()) { // empty data
+            return null;
+        } else {
+            return (str.equals("True")) ? 1 : 0;
+        }
+    }
+
+    private Integer parseGender(String str) {
+        if (str.isEmpty()) { // empty data
+            return null;
+        } else {
+            return (str.equals("Male")) ? 1 : 0;
+        }
     }
 }
