@@ -81,7 +81,21 @@ public class Matrix {
         return splitMatrices;
     }
 
+    public void fillNull(int attribute, int value) {
+        for (ArrayList<Integer> row : matrix) {
+            if (row.get(attribute) == null) {
+                row.set(attribute, value);
+            }
+        }
+    }
 
+    public void dropNull(int attribute) {
+        for (int i = 0; i < matrix.size(); i++) {
+            if (matrix.get(i).get(attribute) == null) {
+                matrix.remove(i);
+            }
+        }
+    }
 
     // parses a row from kaggle_bot_accounts.csv
     // still needs categoric one-hot encoding for REGISTRATION_IPV4 and REGISTRATION_LOCATION

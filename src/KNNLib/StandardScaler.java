@@ -19,12 +19,19 @@ public class StandardScaler implements Scaler {
         for (int i : fitAttributes) {
             double mean = 0;
             double stdDev = 0;
+            double nullCount = 0;
             for (ArrayList<Integer> row : data.getMatrix()) {
-                mean += row.get(i);
+                if (row.get(i) == null) {
+                    nullCount++;
+                } else {
+                    mean += row.get(i);
+                }
             }
-            mean /= data.getMatrix().size();
+            mean /= (data.getMatrix().size() - nullCount);
             for (ArrayList<Integer> row : data.getMatrix()) {
-                stdDev += Math.pow(row.get(i) - mean, 2);
+                if (row.get(i) != null) {
+                    stdDev += Math.pow(row.get(i) - mean, 2);
+                }
             }
             stdDev = Math.sqrt(stdDev / data.getMatrix().size());
             means.add(mean);
@@ -33,7 +40,7 @@ public class StandardScaler implements Scaler {
         for (ArrayList<Integer> row : data.getMatrix()) {
             ArrayList<Integer> scaledRow = new ArrayList<>();
             for (int i = 0; i < row.size(); i++) {
-                if (fitAttributes.contains(i)) {
+                if (fitAttributes.contains(i) && row.get(i) != null) {
                     scaledRow.add((int) ((row.get(i) - means.get(fitAttributes.indexOf(i))) / stdDevs.get(fitAttributes.indexOf(i))));
                 } else {
                     scaledRow.add(row.get(i));

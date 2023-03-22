@@ -49,7 +49,9 @@ public class KNNModel {
         ArrayList<Integer> data2 = matrix.getMatrix().get(row2);
         int dist = 0;
         for(int i = 0; i < data1.size()-1; i++){
-            dist += Math.pow(data1.get(i) - data2.get(i),2);
+            double a1 = data1.get(i) == null ? 0 : data1.get(i);
+            double a2 = data2.get(i) == null ? 0 : data2.get(i);
+            dist += Math.pow(a1 - a2, 2);
         }
         return Math.sqrt(dist);
     }
@@ -82,7 +84,7 @@ public class KNNModel {
             int key = matrix.getMatrix().get(sortList.get(i).getKey()).get(matrix.getCategoryAttribute());
             if(!categories.containsKey(key)){
                 categories.put(key, 1);
-            }else {
+            } else {
                 categories.replace(key,categories.get(key)+1);
             }
 
