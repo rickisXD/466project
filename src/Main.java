@@ -21,7 +21,7 @@ public class Main {
 //        KNNModel model = new KNNModel(5, training, new StandardScaler(), new ArrayList<>(List.of(2,3,4,5,6)));
 //        System.out.println(model.predictAndFindAccuracy(testing));
 //        Matrix data = new Matrix("./files/x.csv");
-        Matrix data = new Matrix("466project/files/kaggle_bot_accounts.csv");
+        Matrix data = new Matrix("./files/kaggle_bot_accounts.csv");
         data.fillNull(2, 0);
         data.fillNull(3, 0);
         data.fillNull(4, 0);
@@ -49,7 +49,7 @@ public class Main {
     //             4. return weighted average precision/recall/f-score
     //             5.
     public static ArrayList<Double> crossValidate(int cv, int neighbors, Matrix matrix, int classifier, ArrayList<Integer> features){
-        ArrayList<ArrayList<Integer>> matrixCopy = (ArrayList<ArrayList<Integer>>) matrix.getMatrix().clone();
+        ArrayList<ArrayList<Double>> matrixCopy = (ArrayList<ArrayList<Double>>) matrix.getMatrix().clone();
         //need to shuffle around rows so that cv is truly random
         Collections.shuffle(matrixCopy);
 
@@ -60,7 +60,7 @@ public class Main {
         //need to get all rows up to the last
         for(int i = 0; i < cv; i++){
             cvIndex = i * cvRowSize;
-            ArrayList<ArrayList<Integer>> cvRows = new ArrayList<>(matrixCopy.subList(cvIndex, cvIndex + cvRowSize));
+            ArrayList<ArrayList<Double>> cvRows = new ArrayList<>(matrixCopy.subList(cvIndex, cvIndex + cvRowSize));
             cvMatrices.add(new Matrix(cvRows));
         }
 

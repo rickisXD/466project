@@ -29,7 +29,7 @@ public class KNNModel {
         int accurate = 0;
 
         for (int i = 0; i < newData.getMatrix().size(); i++) {
-            if((newData.getMatrix().get(i).get(newData.getCategoryAttribute()) == predictions.get(i)) &&
+            if ((newData.getMatrix().get(i).get(newData.getCategoryAttribute()).intValue() == predictions.get(i)) &&
                     (predictions.get(i) == classifier)){
                 accurate++;
             }
@@ -74,10 +74,10 @@ public class KNNModel {
 
     // takes in 2 rows, then computes the euclidean distance between them
     public double findDistance(int row1, int row2) {
-        ArrayList<Integer> data1 = matrix.getMatrix().get(row1);
-        ArrayList<Integer> data2 = matrix.getMatrix().get(row2);
+        ArrayList<Double> data1 = matrix.getMatrix().get(row1);
+        ArrayList<Double> data2 = matrix.getMatrix().get(row2);
         int dist = 0;
-        for(int i = 0; i < data1.size()-1; i++){
+        for (int i : this.fitAttributes){
             double a1 = data1.get(i) == null ? 0 : data1.get(i);
             double a2 = data2.get(i) == null ? 0 : data2.get(i);
             dist += Math.pow(a1 - a2, 2);
@@ -96,8 +96,8 @@ public class KNNModel {
             }
             dists.put(i,findDistance(row,i));
         }
-        List<Map.Entry<Integer, Double> > sortList
-                = new ArrayList<Map.Entry<Integer, Double> >(
+        List<Map.Entry<Integer, Double>> sortList
+                = new ArrayList<Map.Entry<Integer, Double>>(
                 dists.entrySet());
 
         sortList.sort(new Comparator<Map.Entry<Integer, Double>>() {
@@ -110,7 +110,7 @@ public class KNNModel {
         });
 
         for (int i = 0; i < n; i++) {
-            int key = matrix.getMatrix().get(sortList.get(i).getKey()).get(matrix.getCategoryAttribute());
+            int key = matrix.getMatrix().get(sortList.get(i).getKey()).get(matrix.getCategoryAttribute()).intValue();
             if(!categories.containsKey(key)){
                 categories.put(key, 1);
             } else {

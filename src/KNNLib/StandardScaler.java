@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class StandardScaler implements Scaler {
 
-    ArrayList<ArrayList<Integer>> scaledMatrix;
+    ArrayList<ArrayList<Double>> scaledMatrix;
     ArrayList<Double> means;
     ArrayList<Double> stdDevs;
 
@@ -20,7 +20,7 @@ public class StandardScaler implements Scaler {
             double mean = 0;
             double stdDev = 0;
             double nullCount = 0;
-            for (ArrayList<Integer> row : data.getMatrix()) {
+            for (ArrayList<Double> row : data.getMatrix()) {
                 if (row.get(i) == null) {
                     nullCount++;
                 } else {
@@ -28,7 +28,7 @@ public class StandardScaler implements Scaler {
                 }
             }
             mean /= (data.getMatrix().size() - nullCount);
-            for (ArrayList<Integer> row : data.getMatrix()) {
+            for (ArrayList<Double> row : data.getMatrix()) {
                 if (row.get(i) != null) {
                     stdDev += Math.pow(row.get(i) - mean, 2);
                 }
@@ -37,11 +37,11 @@ public class StandardScaler implements Scaler {
             means.add(mean);
             stdDevs.add(stdDev);
         }
-        for (ArrayList<Integer> row : data.getMatrix()) {
-            ArrayList<Integer> scaledRow = new ArrayList<>();
+        for (ArrayList<Double> row : data.getMatrix()) {
+            ArrayList<Double> scaledRow = new ArrayList<>();
             for (int i = 0; i < row.size(); i++) {
                 if (fitAttributes.contains(i) && row.get(i) != null) {
-                    scaledRow.add((int) ((row.get(i) - means.get(fitAttributes.indexOf(i))) / stdDevs.get(fitAttributes.indexOf(i))));
+                    scaledRow.add(((row.get(i) - means.get(fitAttributes.indexOf(i))) / stdDevs.get(fitAttributes.indexOf(i))));
                 } else {
                     scaledRow.add(row.get(i));
                 }
@@ -51,7 +51,7 @@ public class StandardScaler implements Scaler {
         return new Matrix(scaledMatrix);
     }
 
-    public ArrayList<ArrayList<Integer>> getScaledMatrix() {
+    public ArrayList<ArrayList<Double>> getScaledMatrix() {
         return scaledMatrix;
     }
 }

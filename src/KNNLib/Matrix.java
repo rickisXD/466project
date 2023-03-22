@@ -9,9 +9,9 @@ import java.util.Collections;
 
 public class Matrix {
     // reads in file and makes 2d matrix out of it
-    ArrayList<ArrayList<Integer>> matrix;
+    ArrayList<ArrayList<Double>> matrix;
 
-    public Matrix(ArrayList<ArrayList<Integer>> matrix) {
+    public Matrix(ArrayList<ArrayList<Double>> matrix) {
         this.matrix = matrix;
     }
 
@@ -38,11 +38,11 @@ public class Matrix {
 
     }
 
-    public ArrayList<ArrayList<Integer>> getMatrix() {
+    public ArrayList<ArrayList<Double>> getMatrix() {
         return matrix;
     }
 
-    public void setMatrix(ArrayList<ArrayList<Integer>> matrix) {
+    public void setMatrix(ArrayList<ArrayList<Double>> matrix) {
         this.matrix = matrix;
     }
 
@@ -54,7 +54,7 @@ public class Matrix {
     public int getRelevantDocumentCount(int classifier){
         int relevantCount = 0;
         int categoryAtt = getCategoryAttribute();
-        for(ArrayList<Integer> row: this.matrix){
+        for(ArrayList<Double> row: this.matrix){
             if(row.get(categoryAtt) == classifier){
                 relevantCount++;
             }
@@ -68,9 +68,9 @@ public class Matrix {
     public ArrayList<Matrix> splitMatrix(double percent) {
         ArrayList<Matrix> splitMatrices = new ArrayList<>();
 
-        ArrayList<ArrayList<Integer>> matrixCopy = new ArrayList<>();
-        for (ArrayList<Integer> row : this.matrix) {
-            ArrayList<Integer> rowCopy = new ArrayList<>(row);
+        ArrayList<ArrayList<Double>> matrixCopy = new ArrayList<>();
+        for (ArrayList<Double> row : this.matrix) {
+            ArrayList<Double> rowCopy = new ArrayList<>(row);
             matrixCopy.add(rowCopy);
         }
         Collections.shuffle(matrixCopy);
@@ -79,8 +79,8 @@ public class Matrix {
         int numTrainingRows = (int) Math.round(matrixCopy.size() * percent);
 
         // Split into training and testing sets
-        ArrayList<ArrayList<Integer>> trainingMatrix = new ArrayList<>(matrixCopy.subList(0, numTrainingRows));
-        ArrayList<ArrayList<Integer>> testingMatrix = new ArrayList<>(matrixCopy.subList(numTrainingRows, matrixCopy.size()));
+        ArrayList<ArrayList<Double>> trainingMatrix = new ArrayList<>(matrixCopy.subList(0, numTrainingRows));
+        ArrayList<ArrayList<Double>> testingMatrix = new ArrayList<>(matrixCopy.subList(numTrainingRows, matrixCopy.size()));
 
         // Create new Matrix objects for the training and testing sets
         Matrix training = new Matrix();
@@ -97,9 +97,9 @@ public class Matrix {
 
     //function to combine two matrices
     public static Matrix combine(Matrix m1, Matrix m2){
-        ArrayList<ArrayList<Integer>> copyM1 = (ArrayList<ArrayList<Integer>>) m1.getMatrix().clone();
-        ArrayList<ArrayList<Integer>> copyM2 = (ArrayList<ArrayList<Integer>>) m2.getMatrix().clone();
-        for(ArrayList<Integer> row : copyM2){
+        ArrayList<ArrayList<Double>> copyM1 = (ArrayList<ArrayList<Double>>) m1.getMatrix().clone();
+        ArrayList<ArrayList<Double>> copyM2 = (ArrayList<ArrayList<Double>>) m2.getMatrix().clone();
+        for(ArrayList<Double> row : copyM2){
             copyM1.add(row);
         }
 
@@ -107,8 +107,8 @@ public class Matrix {
 
     }
 
-    public void fillNull(int attribute, int value) {
-        for (ArrayList<Integer> row : matrix) {
+    public void fillNull(int attribute, double value) {
+        for (ArrayList<Double> row : matrix) {
             if (row.get(attribute) == null) {
                 row.set(attribute, value);
             }
@@ -128,8 +128,8 @@ public class Matrix {
 
     // parses a row from kaggle_bot_accounts.csv
     // still needs categoric one-hot encoding for REGISTRATION_IPV4 and REGISTRATION_LOCATION
-    private ArrayList<Integer> parseRow(ArrayList<String> row) {
-        ArrayList<Integer> parsedRow = new ArrayList<>();
+    private ArrayList<Double> parseRow(ArrayList<String> row) {
+        ArrayList<Double> parsedRow = new ArrayList<>();
 
         parsedRow.add(parseGender(row.get(2))); // GENDER (1 = Male, 0 = Female)
         parsedRow.add(parseBoolean(row.get(4))); // IS_GLOGIN
@@ -159,27 +159,27 @@ public class Matrix {
         return parsedRow;
     }
 
-    private Integer parseNumeric(String str) {
+    private Double parseNumeric(String str) {
         if (str.isEmpty()) { // empty data
             return null;
         } else {
-            return (int) Double.parseDouble(str);
+            return Double.parseDouble(str);
         }
     }
 
-    private Integer parseBoolean(String str) {
+    private Double parseBoolean(String str) {
         if (str.isEmpty()) { // empty data
             return null;
         } else {
-            return (str.equals("True")) ? 1 : 0;
+            return (str.equals("True")) ? 1.0 : 0.0;
         }
     }
 
-    private Integer parseGender(String str) {
+    private Double parseGender(String str) {
         if (str.isEmpty()) { // empty data
             return null;
         } else {
-            return (str.equals("Male")) ? 1 : 0;
+            return (str.equals("Male")) ? 1.0 : 0.0;
         }
     }
 }
