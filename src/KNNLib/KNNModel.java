@@ -20,17 +20,41 @@ public class KNNModel {
 
     // takes in a set of data we predict with in our data, needs to have same
     // dimensions as the matrix we fitted the model with (assume all columns are numeric)
-    //compare our predictions to the actual result and returns the accuracy of our model
-    public double predictAndFindAccuracy(Matrix newData) {
+    //compare our predictions to the actual result and returns the accuracy of our model (precision/recall/f-score)
+    public ArrayList<Double> predictAndEvaluate(Matrix newData, int classifier) {
         ArrayList<Integer> predictions = predict(newData);
+        ArrayList<Double> accuracyMetrics = new ArrayList<>();
+        int recallDenominator = newData.getRelevantDocumentCount(classifier);
+        int precisionDenominator = 0;
         int accurate = 0;
+
         for (int i = 0; i < newData.getMatrix().size(); i++) {
-            if(newData.getMatrix().get(i).get(newData.getCategoryAttribute()) == predictions.get(i)){
+            if((newData.getMatrix().get(i).get(newData.getCategoryAttribute()) == predictions.get(i)) &&
+                    (predictions.get(i) == classifier)){
                 accurate++;
             }
         }
-        return (double)accurate/predictions.size();
+
+        //to calculate precision, we need TP + FP from prediction
+        for(int prediction : predictions){
+            if(prediction == classifier){
+                precisionDenominator++;
+            }
+        }
+
+
+        double precision = (double) accurate / precisionDenominator;
+        double recall = (double) accurate / recallDenominator;
+        double f1Score = (2 * precision * recall) / (precision + recall);
+
+        accuracyMetrics.add(precision);
+        accuracyMetrics.add(recall);
+        accuracyMetrics.add(f1Score);
+
+        return accuracyMetrics;
     }
+
+
 
     // takes in a set of data we want to predict with our model,
     // needs to have same dimensions as the matrix we fitted the model with

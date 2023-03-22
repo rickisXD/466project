@@ -35,6 +35,7 @@ public class Matrix {
             e.printStackTrace();
         }
 
+
     }
 
     public ArrayList<ArrayList<Integer>> getMatrix() {
@@ -49,7 +50,20 @@ public class Matrix {
         return matrix.get(0).size()-1;
     }
 
-    // splits the matrix into a training and testing set
+    //returns number of rows to calculate recall
+    public int getRelevantDocumentCount(int classifier){
+        int relevantCount = 0;
+        int categoryAtt = getCategoryAttribute();
+        for(ArrayList<Integer> row: this.matrix){
+            if(row.get(categoryAtt) == classifier){
+                relevantCount++;
+            }
+        }
+        return relevantCount;
+
+    }
+
+    //splits the matrix into a training and testing set
     // i.e. return [training, testing]
     public ArrayList<Matrix> splitMatrix(double percent) {
         ArrayList<Matrix> splitMatrices = new ArrayList<>();
