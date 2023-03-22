@@ -95,6 +95,18 @@ public class Matrix {
         return splitMatrices;
     }
 
+    //function to combine two matrices
+    public static Matrix combine(Matrix m1, Matrix m2){
+        ArrayList<ArrayList<Integer>> copyM1 = (ArrayList<ArrayList<Integer>>) m1.getMatrix().clone();
+        ArrayList<ArrayList<Integer>> copyM2 = (ArrayList<ArrayList<Integer>>) m2.getMatrix().clone();
+        for(ArrayList<Integer> row : copyM2){
+            copyM1.add(row);
+        }
+
+        return new Matrix(copyM1);
+
+    }
+
     public void fillNull(int attribute, int value) {
         for (ArrayList<Integer> row : matrix) {
             if (row.get(attribute) == null) {

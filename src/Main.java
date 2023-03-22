@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        Matrix data = new Matrix("./files/kaggle_bot_accounts.csv");
+//        Matrix data = new Matrix("../files/kaggle_bot_accounts.csv");
 //        data.fillNull(2, 0);
 //        data.fillNull(3, 0);
 //        data.fillNull(4, 0);
@@ -21,7 +21,7 @@ public class Main {
 //        KNNModel model = new KNNModel(5, training, new StandardScaler(), new ArrayList<>(List.of(2,3,4,5,6)));
 //        System.out.println(model.predictAndFindAccuracy(testing));
 //        Matrix data = new Matrix("./files/x.csv");
-//        Matrix data = new Matrix("466project/src/kaggle_bot_accounts.csv");
+        Matrix data = new Matrix("466project/files/kaggle_bot_accounts.csv");
         data.fillNull(2, 0);
         data.fillNull(3, 0);
         data.fillNull(4, 0);
@@ -32,10 +32,11 @@ public class Main {
 //        KNNModel model = new KNNModel(data, new StandardScaler(), [attr]);
 //        System.out.println(model.predictAndFindAccuracy(Matrix testing));
 //        System.out.println("Hello world!");
-        ArrayList<Double> finalScore = crossValidate(10, data, 1, new ArrayList<>(List.of(2)));
-        System.out.println("CVPrecision: " + finalScore.get(0));
-        System.out.println("CVRecall: " + finalScore.get(1));
-        System.out.println("CVF-Score: " + finalScore.get(2));
+//        ArrayList<Double> finalScore = crossValidate(3, 1000, data, 1, new ArrayList<>(List.of(2,3,4,5,6)));
+//        System.out.println("CVPrecision: " + finalScore.get(0));
+//        System.out.println("CVRecall: " + finalScore.get(1));
+//        System.out.println("CVF-Score: " + finalScore.get(2));
+        tuneHyper(data, 1, new ArrayList<>(List.of(2,3,4,5,6)), 10);
 
     }
 
@@ -47,7 +48,7 @@ public class Main {
     //             3. do PredictAndEvaluate on each
     //             4. return weighted average precision/recall/f-score
     //             5.
-    public static ArrayList<Double> crossValidate(int cv, Matrix matrix, int classifier, ArrayList<Integer> features){
+    public static ArrayList<Double> crossValidate(int cv, int neighbors, Matrix matrix, int classifier, ArrayList<Integer> features){
         ArrayList<ArrayList<Integer>> matrixCopy = (ArrayList<ArrayList<Integer>>) matrix.getMatrix().clone();
         //need to shuffle around rows so that cv is truly random
         Collections.shuffle(matrixCopy);
@@ -63,34 +64,30 @@ public class Main {
             cvMatrices.add(new Matrix(cvRows));
         }
 
-        //now we need to get train-test splits for all cvs (80-20)
-        ArrayList<ArrayList<Matrix>> trainTestCv = new ArrayList<>();
-
-        for (Matrix cvMatrix : cvMatrices){
-            ArrayList<Matrix> trainTest = cvMatrix.splitMatrix(0.8);
-            trainTestCv.add(trainTest);
-        }
-
         //now we do a prediction of each
-        // first fitting on training data
-        // then predicting and validating on test data
-
+        // first fitting on cv - 1 chunks
+        // then predicting and validating on test data (1 chunk)
 
         double precisionSum = 0;
         double recallSum = 0;
         double fSum = 0;
 
-        for (ArrayList<Matrix> testTrain : trainTestCv){
-            Matrix train = testTrain.get(0);
-            Matrix test = testTrain.get(1);
+        for (int i = 0; i < cv; i++){
+            //I am treating cvMatrices like a queue, so that we can do cross-val accurately
+            Matrix test = cvMatrices.remove(0);
+            Matrix train = new Matrix();
+            for(int j = 0; j < cvMatrices.size(); j ++){
+                train = Matrix.combine(train, cvMatrices.get(j));
+            }
             //fit to model
-            KNNModel model = new KNNModel(1000, train, new StandardScaler(), features);
+            KNNModel model = new KNNModel(neighbors, train, new StandardScaler(), features);
             //predict
             ArrayList<Double> eval = model.predictAndEvaluate(test, classifier);
             //add to all accuracies
             precisionSum += eval.get(0);
             recallSum += eval.get(1);
             fSum += eval.get(2);
+            cvMatrices.add(test);
         }
 
         //now precision/recall/f-score to get avg. precision/recall/f-score
@@ -100,7 +97,26 @@ public class Main {
         finalAccur.add(fSum / (float) cv);
 
         return finalAccur;
+    }
 
+    //hyper-parameter tuning, will return the n value with the highest f-score
+    //will loop through n-values from  1 to range, getting the avg cross validated f-score each time
+    //returns the n-value with the highest f-score
+    //to test, just follow my initial call in main. It is checking between 1-10. but remember this is
+    //very slow
+    public static void tuneHyper(Matrix data, int classifier, ArrayList<Integer> features, int range){
+        ArrayList<ArrayList<Double>> parameterScores = new ArrayList<>();
+        for(int i = 1; i < range; i++){
+            ArrayList<Double> parameterScore = new ArrayList<>();
+            ArrayList<Double> scores = crossValidate(10, i, data, classifier, features);
+            parameterScore.add((double) i);
+            parameterScore.add(scores.get(2));
+            parameterScores.add(parameterScore);
+        }
+
+        parameterScores.sort(((o1, o2) -> {return (int) (o1.get(1) - o2.get(1));}));
+        ArrayList<Double> bestF1 = parameterScores.get(parameterScores.size() - 1);
+        System.out.println("best n_neighbors parameter: " + bestF1.get(0) + "\nbest f-1 Score: "  + bestF1.get(1));
     }
 
 

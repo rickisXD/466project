@@ -43,9 +43,14 @@ public class KNNModel {
         }
 
 
-        double precision = (double) accurate / precisionDenominator;
-        double recall = (double) accurate / recallDenominator;
-        double f1Score = (2 * precision * recall) / (precision + recall);
+        double precision = 0;
+        double recall = 0;
+        double f1Score = 0;
+        if(accurate != 0){
+            precision = (double) accurate / precisionDenominator;
+            recall = (double) accurate / recallDenominator;
+            f1Score = (2 * precision * recall) / (precision + recall);
+        }
 
         accuracyMetrics.add(precision);
         accuracyMetrics.add(recall);
