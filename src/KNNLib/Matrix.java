@@ -90,9 +90,12 @@ public class Matrix {
     }
 
     public void dropNull(int attribute) {
-        for (int i = 0; i < matrix.size(); i++) {
+        int i = 0;
+        while (i < matrix.size()) {
             if (matrix.get(i).get(attribute) == null) {
                 matrix.remove(i);
+            } else {
+                i++;
             }
         }
     }
