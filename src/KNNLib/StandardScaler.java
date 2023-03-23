@@ -1,5 +1,6 @@
 package KNNLib;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class StandardScaler implements Scaler {
@@ -15,7 +16,7 @@ public class StandardScaler implements Scaler {
     }
 
     // returns the matrix with each element scaled normally (also stores the new matrix in scaledMatrix)
-    public Matrix fitTransform(Matrix data, ArrayList<Integer> fitAttributes) {
+    public Matrix initTransform(Matrix data, ArrayList<Integer> fitAttributes) {
         for (int i : fitAttributes) {
             double mean = 0;
             double stdDev = 0;
@@ -49,6 +50,22 @@ public class StandardScaler implements Scaler {
             scaledMatrix.add(scaledRow);
         }
         return new Matrix(scaledMatrix);
+    }
+
+    public Matrix fitTransform(Matrix data, ArrayList<Integer> fitAttributes) {
+        ArrayList<ArrayList<Double>> newScaledMatrix = new ArrayList<>();
+        for (int row = 0; row < data.getMatrix().size(); row++) {
+            ArrayList<Double> newScaledRow = new ArrayList<>();
+            for (int col = 0; col < data.getMatrix().get(row).size(); col++) {
+                if (fitAttributes.contains(col) && data.getMatrix().get(row).get(col) != null) {
+                    newScaledRow.add((data.getMatrix().get(row).get(col) - means.get(fitAttributes.indexOf(col))) / stdDevs.get(fitAttributes.indexOf(col)));
+                } else {
+                    newScaledRow.add(data.getMatrix().get(row).get(col));
+                }
+            }
+            newScaledMatrix.add(newScaledRow);
+        }
+        return new Matrix(newScaledMatrix);
     }
 
     public ArrayList<ArrayList<Double>> getScaledMatrix() {

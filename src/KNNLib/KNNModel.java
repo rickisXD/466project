@@ -15,7 +15,7 @@ public class KNNModel {
         this.matrix = matrix;
         this.scaler = scaler;
         this.fitAttributes = fitAttributes;
-        this.scaledData = scaler.fitTransform(matrix, fitAttributes);
+        this.scaledData = scaler.initTransform(matrix, fitAttributes);
     }
 
     // takes in a set of data we predict with in our data, needs to have same
@@ -66,19 +66,19 @@ public class KNNModel {
     // returns a list of predicted classifications
     public ArrayList<Integer> predict(Matrix newData) {
         ArrayList<Integer> predictions = new ArrayList<>();
-        for (int i = 0; i < newData.getMatrix().size(); i++) {
-            predictions.add(findCategory(i));
+        Matrix scaledNewData = scaler.fitTransform(newData, fitAttributes);
+        for (ArrayList<Double> row : scaledNewData.getMatrix()) {
+            predictions.add(findCategory(row));
         }
         return predictions;
     }
 
     // takes in 2 rows, then computes the euclidean distance between them
-    public double findDistance(int row1, int row2) {
-        ArrayList<Double> data1 = matrix.getMatrix().get(row1);
-        ArrayList<Double> data2 = matrix.getMatrix().get(row2);
+    public double findDistance(ArrayList<Double> row1, int row2) {
+        ArrayList<Double> data2 = scaledData.getMatrix().get(row2);
         int dist = 0;
         for (int i : this.fitAttributes){
-            double a1 = data1.get(i) == null ? 0 : data1.get(i);
+            double a1 = row1.get(i) == null ? 0 : row1.get(i);
             double a2 = data2.get(i) == null ? 0 : data2.get(i);
             dist += Math.pow(a1 - a2, 2);
         }
@@ -87,13 +87,10 @@ public class KNNModel {
 
     // based on row, finds the k nearest neighbors and
     // returns the most common category
-    public int findCategory(int row) {
+    public int findCategory(ArrayList<Double> row) {
         HashMap<Integer, Double> dists = new HashMap<>();
         HashMap<Integer, Integer> categories = new HashMap<>();
-        for (int i = 0; i < matrix.getMatrix().size(); i++) {
-            if(i == row){
-                continue;
-            }
+        for (int i = 0; i < scaledData.getMatrix().size(); i++) {
             dists.put(i,findDistance(row,i));
         }
         List<Map.Entry<Integer, Double>> sortList
@@ -110,7 +107,7 @@ public class KNNModel {
         });
 
         for (int i = 0; i < n; i++) {
-            int key = matrix.getMatrix().get(sortList.get(i).getKey()).get(matrix.getCategoryAttribute()).intValue();
+            int key = scaledData.getMatrix().get(sortList.get(i).getKey()).get(scaledData.getCategoryAttribute()).intValue();
             if(!categories.containsKey(key)){
                 categories.put(key, 1);
             } else {
