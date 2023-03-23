@@ -8,19 +8,6 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-//        Matrix data = new Matrix("../files/kaggle_bot_accounts.csv");
-//        data.fillNull(2, 0);
-//        data.fillNull(3, 0);
-//        data.fillNull(4, 0);
-//        data.fillNull(5, 0);
-//        data.fillNull(6, 0);
-//        data.dropNull(data.getCategoryAttribute());
-//        ArrayList<Matrix> splits = data.splitMatrix(0.8);
-//        Matrix training = splits.get(0);
-//        Matrix testing = splits.get(1);
-//        KNNModel model = new KNNModel(5, training, new StandardScaler(), new ArrayList<>(List.of(2,3,4,5,6)));
-//        System.out.println(model.predictAndFindAccuracy(testing));
-//        Matrix data = new Matrix("./files/x.csv");
         Matrix data = new Matrix("./files/kaggle_bot_accounts.csv");
         data.fillNull(2, 0);
         data.fillNull(3, 0);
@@ -28,18 +15,8 @@ public class Main {
         data.fillNull(5, 0);
         data.fillNull(6, 0);
         data.dropNull(data.getCategoryAttribute());
-
-//        KNNModel model = new KNNModel(data, new StandardScaler(), [attr]);
-//        System.out.println(model.predictAndFindAccuracy(Matrix testing));
-//        System.out.println("Hello world!");
-//        ArrayList<Double> finalScore = crossValidate(3, 1000, data, 1, new ArrayList<>(List.of(2,3,4,5,6)));
-//        System.out.println("CVPrecision: " + finalScore.get(0));
-//        System.out.println("CVRecall: " + finalScore.get(1));
-//        System.out.println("CVF-Score: " + finalScore.get(2));
         tuneHyper(data, 1, new ArrayList<>(List.of(2,3,4,5,6)), 10);
-
     }
-
 
     //create a function that does 10-fold cross-validation
     //pseudo-code: 1. shuffle all rows of matrix
@@ -118,7 +95,4 @@ public class Main {
         ArrayList<Double> bestF1 = parameterScores.get(parameterScores.size() - 1);
         System.out.println("best n_neighbors parameter: " + bestF1.get(0) + "\nbest f-1 Score: "  + bestF1.get(1));
     }
-
-
-
 }

@@ -59,8 +59,6 @@ public class KNNModel {
         return accuracyMetrics;
     }
 
-
-
     // takes in a set of data we want to predict with our model,
     // needs to have same dimensions as the matrix we fitted the model with
     // returns a list of predicted classifications
